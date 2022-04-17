@@ -21,16 +21,16 @@ resource "local_file" "kubeconfig-local" {
 #     filename = pathexpand("~/.kube/kubeconfig-linode")
 # }
 
-resource "null_resource" "config_copy" {
-  provisioner "local-exec" {
-    command = "cp ${local_file.kubeconfig-local.filename} ${pathexpand("~/.kube")}"
-  }
-}
+# resource "null_resource" "config_copy" {
+#   provisioner "local-exec" {
+#     command = "cp ${local_file.kubeconfig-local.filename} ${pathexpand("~/.kube")}"
+#   }
+# }
 
-resource "local_file" "terraform_zsh_env" {
-    content = "export KUBECONFIG=${pathexpand("~/.kube")}/${basename(local_file.kubeconfig-local.filename)}"
-    filename = pathexpand("~/.terraform_env")
-}
+# resource "local_file" "terraform_zsh_env" {
+#     content = "export KUBECONFIG=${pathexpand("~/.kube")}/${basename(local_file.kubeconfig-local.filename)}"
+#     filename = pathexpand("~/.terraform_env")
+# }
 
 # Network config:
 resource "linode_firewall" "firewall" {

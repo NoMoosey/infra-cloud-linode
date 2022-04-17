@@ -1,26 +1,11 @@
-variable "cert_mgr_version" {
-  type = string
-  default = "1.8.0"
-}
+# resource "kubectl_manifest" "cert_manager_crd_manifest" {
+#   yaml_body = var.cert_mgr_manifest
+# }
 
-variable "cert_mgr_crd_filename" {
-  type = string
-  default = "cert-mgr-crds.yaml"
-}
-
-resource "null_resource" "cert_mgr_crd_manifest" {
-  provisioner "local-exec" {
-    command = " kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v${var.cert_mgr_version}/cert-manager.crds.yaml"
-  }
-  # triggers = {
-  #   "before" = "${helm_release.cert_manager_release}"
-  # }
-}
-
-resource "time_sleep" "wait_for_certmgr_crd" {
-  create_duration = "30s"
-  depends_on = [null_resource.cert_mgr_crd_manifest]
-}
+# resource "time_sleep" "wait_for_certmgr_crd" {
+#   create_duration = "30s"
+#   depends_on = [kubectl_manifest.cert_manager_crd_manifest]
+# }
 
 # resource "kubernetes_manifest" "cert_mgr_crd" {
 #   manifest = yamldecode(file("${path.module}/${var.cert_mgr_crd_filename}"))
@@ -30,7 +15,7 @@ resource "helm_release" "cert_manager_release" {
   name       = "cert-manager"
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
-  version    = var.cert_mgr_version
+  version    = "1.8.0"
 
   namespace = "cert-manager"
   create_namespace = true
@@ -38,12 +23,12 @@ resource "helm_release" "cert_manager_release" {
   recreate_pods = true
   force_update = true
 
-  # # Install Kubernetes CRDs
-  # set {
-  #     name  = "installCRDs"
-  #     value = "true"
-  # }    
-  depends_on = [time_sleep.wait_for_certmgr_crd]
+  # Install Kubernetes CRDs
+  set {
+      name  = "installCRDs"
+      value = "true"
+  }    
+  # depends_on = [time_sleep.wait_for_certmgr_crd]
 }
 
 resource "time_sleep" "wait_for_certmgr_release" {

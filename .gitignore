@@ -31,3 +31,4 @@ override.tf.json
 
 kubeconfig
 show.json
+creds.auto.tfvars
